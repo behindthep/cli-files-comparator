@@ -4,3 +4,7 @@ logs
 *.swp
 *.cache
 build
+testdox.txt
+coverage.txt
+clover.xml
+/xml-coverage/
