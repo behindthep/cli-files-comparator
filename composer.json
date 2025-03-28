@@ -14,12 +14,12 @@
   "minimum-stability": "stable",
   "autoload": {
     "psr-4": {
-      "Difference\\Comparator\\": "src"
+      "Diff\\Comparator\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Difference\\Comparator\\Tests\\": "tests"
+      "Diff\\Comparator\\Tests\\": "tests"
     }
   },
   "require": {
