@@ -9,8 +9,8 @@ class Differ
      */
     public function genDiff(string $pathToFirstFile, string $pathToSecondFile, string $format = 'stylish'): string
     {
-        $firstFile  = file_get_contents('tests/fixtures/' . $pathToFirstFile);
-        $secondFile = file_get_contents('tests/fixtures/' . $pathToSecondFile);
+        $firstFile  = file_get_contents($pathToFirstFile);
+        $secondFile = file_get_contents($pathToSecondFile);
 
         $parsedFirstFile  = json_decode($firstFile, true);
         $parsedSecondFile = json_decode($secondFile, true);
