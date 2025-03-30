@@ -30,9 +30,12 @@ class Differ
         $difference = '';
 
         foreach ($uniqueKeys as $key) {
+            $firstValue  = $parsedFirstFile[$key]  ?? null;
+            $secondValue = $parsedSecondFile[$key] ?? null;
+
             if (array_key_exists($key, $parsedFirstFile) && array_key_exists($key, $parsedSecondFile)) {
-                $firstData  = $this->convertBoolToString($parsedFirstFile[$key]);
-                $secondData = $this->convertBoolToString($parsedSecondFile[$key]);
+                $firstData  = $this->stringifyValue($firstValue);
+                $secondData = $this->stringifyValue($secondValue);
 
                 if ($firstData === $secondData) {
                     $difference .= "    $key: $firstData\n";
@@ -40,22 +43,24 @@ class Differ
                     $difference .= "  - $key: $firstData\n  + $key: $secondData\n";
                 }
             } elseif (array_key_exists($key, $parsedFirstFile) && !array_key_exists($key, $parsedSecondFile)) {
-                $firstData   = $this->convertBoolToString($parsedFirstFile[$key]);
+                $firstData   = $this->stringifyValue($firstValue);
                 $difference .= "  - $key: $firstData\n";
             } elseif (!array_key_exists($key, $parsedFirstFile) && array_key_exists($key, $parsedSecondFile)) {
-                $secondData  = $this->convertBoolToString($parsedSecondFile[$key]);
+                $secondData  = $this->stringifyValue($secondValue);
                 $difference .= "  + $key: $secondData\n";
             }
         }
 
-        $difference = "{\n$difference}\n";
         return $difference;
     }
 
-    private function convertBoolToString(mixed $value): mixed
+    private function stringifyValue(mixed $value): mixed
     {
         if (is_bool($value)) {
             return $value ? 'true' : 'false';
+        } 
+        elseif (is_null($value)) {
+            return 'null';
         }
 
         return $value;
