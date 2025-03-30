@@ -19,7 +19,8 @@ class GenDiffTest extends TestCase
     {
         return [
             ['json'],
-            // ['yaml']
+            ['yml'],
+            ['yaml']
         ];
     }
 
@@ -30,11 +31,16 @@ class GenDiffTest extends TestCase
     {
         $firstFixture  = $this->getPathToFixture("file1.$extension");
         $secondFixture = $this->getPathToFixture("file2.$extension");
+        $thirdFixture  = $this->getPathToFixture("file3.$extension");
+        $fourthFixture = $this->getPathToFixture("file4.$extension");
 
-        $actual   = $this->differ->genDiff($firstFixture, $secondFixture, 'plain');
-        $expected = file_get_contents($this->getPathToFixture('expectedPlainJson'));
+        $actualSimple   = $this->differ->genDiff($firstFixture, $secondFixture, 'stylish');
+        $actualNested   = $this->differ->genDiff($thirdFixture, $fourthFixture, 'stylish');
+        $expectedSimple = file_get_contents($this->getPathToFixture('expectedSimple'));
+        $expectedNested = file_get_contents($this->getPathToFixture('expectedNested'));
 
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expectedSimple, $actualSimple);
+        $this->assertEquals($expectedNested, $actualNested);
     }
 
     private function getPathToFixture(string $fixture): string
