@@ -1,16 +1,15 @@
 <?php
- 
+
 namespace Diff\Comparator\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use Diff\Comparator\Differ;
 
 class GenDiffTest extends TestCase
 {
-    private $differ;
+    private Differ $differ;
 
-    protected function setUp(): void 
+    protected function setUp(): void
     {
         $this->differ = new Differ();
     }
@@ -35,12 +34,16 @@ class GenDiffTest extends TestCase
         $fourthFixture = $this->getPathToFixture("file4.$extension");
 
         $actualSimple   = $this->differ->genDiff($firstFixture, $secondFixture, 'stylish');
-        $actualNested   = $this->differ->genDiff($thirdFixture, $fourthFixture, 'stylish');
         $expectedSimple = file_get_contents($this->getPathToFixture('expectedSimple'));
-        $expectedNested = file_get_contents($this->getPathToFixture('expectedNested'));
-
         $this->assertEquals($expectedSimple, $actualSimple);
-        $this->assertEquals($expectedNested, $actualNested);
+
+        $actualStylish   = $this->differ->genDiff($thirdFixture, $fourthFixture, 'stylish');
+        $expectedStylish = file_get_contents($this->getPathToFixture('expectedStylish'));
+        $this->assertEquals($expectedStylish, $actualStylish);
+
+        $actualPlain   = $this->differ->genDiff($thirdFixture, $fourthFixture, 'plain');
+        $expectedPlain = file_get_contents($this->getPathToFixture('expectedPlain'));
+        $this->assertEquals($expectedPlain, $actualPlain);
     }
 
     private function getPathToFixture(string $fixture): string
