@@ -13,6 +13,16 @@ class Differ
         $parsedFirstFile  = $parser->parse($pathToFirstFile);
         $parsedSecondFile = $parser->parse($pathToSecondFile);
 
+        $diff = $this->makeDiff($parsedFirstFile, $parsedSecondFile);
+
+        $formatter = new Formatters();
+        $result = $formatter->makeFormat($diff, $format);
+    
+        return $result;
+    }
+
+    private function makeDiff(array $parsedFirstFile, array $parsedSecondFile): string
+    {
         $uniqueKeys = array_unique(array_merge(array_keys($parsedFirstFile), array_keys($parsedSecondFile)));
 
         sort($uniqueKeys);
