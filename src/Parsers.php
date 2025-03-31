@@ -6,7 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Parsers
 {
-    private function getFileContent(string $pathToFile): string
+    private static function getFileContent(string $pathToFile): string
     {
         $content = is_file($pathToFile) ? file_get_contents($pathToFile) : exit("File '$pathToFile' not found.\n");
         return $content;

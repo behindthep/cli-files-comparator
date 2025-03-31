@@ -11,10 +11,10 @@ class Stylish
         return "{\n$result\n}\n";
     }
 
-    private function makeStringFromDiff(array $diff, int $level = 0): array
+    private static function makeStringFromDiff(array $diff, int $level = 0): array
     {
         $stringifiedDiff = [];
-        $spaces = $this->getSpaces($level);
+        $spaces = self::getSpaces($level);
         $nextLevel = $level + 1;
 
         foreach ($diff as $node) {
@@ -25,25 +25,25 @@ class Stylish
 
             switch ($status) {
                 case 'nested':
-                    $nested = $this->makeStringFromDiff($value1, $nextLevel);
+                    $nested = self::makeStringFromDiff($value1, $nextLevel);
                     $stringifiedNest = implode("\n", $nested);
                     $stringifiedDiff[] = "$spaces    $key: {\n$stringifiedNest\n$spaces    }";
                     break;
                 case 'unchanged':
-                    $stringifiedValue1 = $this->stringifyValue($value1, $nextLevel);
+                    $stringifiedValue1 = self::stringifyValue($value1, $nextLevel);
                     $stringifiedDiff[] = "$spaces    $key: $stringifiedValue1";
                     break;
                 case 'added':
-                    $stringifiedValue1 = $this->stringifyValue($value1, $nextLevel);
+                    $stringifiedValue1 = self::stringifyValue($value1, $nextLevel);
                     $stringifiedDiff[] = "$spaces  + $key: $stringifiedValue1";
                     break;
                 case 'removed':
-                    $stringifiedValue1 = $this->stringifyValue($value1, $nextLevel);
+                    $stringifiedValue1 = self::stringifyValue($value1, $nextLevel);
                     $stringifiedDiff[] = "$spaces  - $key: $stringifiedValue1";
                     break;
                 case 'updated':
-                    $stringifiedValue1 = $this->stringifyValue($value1, $nextLevel);
-                    $stringifiedValue2 = $this->stringifyValue($value2, $nextLevel);
+                    $stringifiedValue1 = self::stringifyValue($value1, $nextLevel);
+                    $stringifiedValue2 = self::stringifyValue($value2, $nextLevel);
                     $stringifiedDiff[] = "$spaces  - $key: $stringifiedValue1\n$spaces  + $key: $stringifiedValue2";
             }
         }
@@ -51,35 +51,35 @@ class Stylish
         return $stringifiedDiff;
     }
 
-    private function getSpaces(int $level): string
+    private static function getSpaces(int $level): string
     {
         return str_repeat('    ', $level);
     }
 
-    private function stringifyValue(mixed $value, int $level): mixed
+    private static function stringifyValue(mixed $value, int $level): mixed
     {
         if (is_null($value)) {
             return 'null';
         } elseif (is_bool($value)) {
             return $value ? 'true' : 'false';
         } elseif (is_array($value)) {
-            $result = $this->convertArrayToString($value, $level);
-            $spaces = $this->getSpaces($level);
+            $result = self::convertArrayToString($value, $level);
+            $spaces = self::getSpaces($level);
             return "$result\n$spaces";
         }
 
         return "$value";
     }
 
-    private function convertArrayToString(array $value, int $level): string
+    private static function convertArrayToString(array $value, int $level): string
     {
         $keys = array_keys($value);
         $result = [];
         $nextLevel = $level + 1;
 
         $callback = function ($key) use ($value, $nextLevel) {
-            $newValue = $this->stringifyValue($value[$key], $nextLevel);
-            $spaces = $this->getSpaces($nextLevel);
+            $newValue = self::stringifyValue($value[$key], $nextLevel);
+            $spaces = self::getSpaces($nextLevel);
             return "\n{$spaces}{$key}: $newValue";
         };
 

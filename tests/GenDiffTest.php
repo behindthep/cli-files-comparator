@@ -7,13 +7,6 @@ use Diff\Comparator\Differ;
 
 class GenDiffTest extends TestCase
 {
-    private Differ $differ;
-
-    protected function setUp(): void
-    {
-        $this->differ = new Differ();
-    }
-
     public static function extensionProvider(): array
     {
         return [
@@ -33,15 +26,15 @@ class GenDiffTest extends TestCase
         $thirdFixture  = $this->getPathToFixture("file3.$extension");
         $fourthFixture = $this->getPathToFixture("file4.$extension");
 
-        $actualSimple   = $this->differ->genDiff($firstFixture, $secondFixture, 'stylish');
+        $actualSimple   = Differ::genDiff($firstFixture, $secondFixture, 'stylish');
         $expectedSimple = file_get_contents($this->getPathToFixture('expectedSimple'));
         $this->assertEquals($expectedSimple, $actualSimple);
 
-        $actualStylish   = $this->differ->genDiff($thirdFixture, $fourthFixture, 'stylish');
+        $actualStylish   = Differ::genDiff($thirdFixture, $fourthFixture, 'stylish');
         $expectedStylish = file_get_contents($this->getPathToFixture('expectedStylish'));
         $this->assertEquals($expectedStylish, $actualStylish);
 
-        $actualPlain   = $this->differ->genDiff($thirdFixture, $fourthFixture, 'plain');
+        $actualPlain   = Differ::genDiff($thirdFixture, $fourthFixture, 'plain');
         $expectedPlain = file_get_contents($this->getPathToFixture('expectedPlain'));
         $this->assertEquals($expectedPlain, $actualPlain);
     }

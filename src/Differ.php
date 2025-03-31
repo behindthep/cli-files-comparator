@@ -19,9 +19,9 @@ class Differ
         return $result;
     }
 
-    private function makeDiff(array $parsedFirstFile, array $parsedSecondFile): array
+    private static function makeDiff(array $parsedFirstFile, array $parsedSecondFile): array
     {
-        $uniqueKeys = $this->getSortedUniqueKeys($parsedFirstFile, $parsedSecondFile);
+        $uniqueKeys = self::getSortedUniqueKeys($parsedFirstFile, $parsedSecondFile);
 
         $differ = [];
 
@@ -33,7 +33,7 @@ class Differ
                 $differ[] = [
                     'status' => 'nested',
                     'key'    => $key,
-                    'value1' => $this->makeDiff($firstValue, $secondValue),
+                    'value1' => self::makeDiff($firstValue, $secondValue),
                     'value2' => null
                 ];
                 continue;
@@ -79,7 +79,7 @@ class Differ
         return $differ;
     }
 
-    private function getSortedUniqueKeys(array $parsedFirstFile, array $parsedSecondFile): array
+    private static function getSortedUniqueKeys(array $parsedFirstFile, array $parsedSecondFile): array
     {
         $firstFileKeys  = array_keys($parsedFirstFile);
         $secondFileKeys = array_keys($parsedSecondFile);
