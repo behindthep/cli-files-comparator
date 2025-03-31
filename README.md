@@ -4,7 +4,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/maintainability)](https://codeclimate.com/github/behindthep/difference-comparator/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/test_coverage)](https://codeclimate.com/github/behindthep/difference-comparator/test_coverage)
 
-### Косольная утилита для определеления разницы между двумя структурами данных.
+#### Косольная утилита для определеления разницы между двумя структурами данных
 
 * Поддержка входных форматов yaml и json
 * Генерация отчета в виде plain text, stylish и json
