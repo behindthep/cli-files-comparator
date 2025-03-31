@@ -9,9 +9,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    # список шагов экшена — выполняет задачу checkout — клонирует репозиторий
+    # список шагов экшена — выполняет задачу 
     steps:
-        # Check-out repository under GitHub workspace
+        # Check-out repository under GitHub workspace.
+        # checkout — клонирует репозиторий в директорию где запускаются шаги задания
         # https://github.com/actions/checkout
       - uses: actions/checkout@v4
         # Step's name
