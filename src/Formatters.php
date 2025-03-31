@@ -2,18 +2,18 @@
 
 namespace Diff\Comparator;
 
-use Diff\Comparator\Formatters\Stylish;
+use Diff\Comparator\Formatters\{Stylish, Plain};
 
 class Formatters
 {
     public static function makeFormat(array $difference, string $format): string
     {
-        switch ($format) {
-            case 'stylish':
-                $formatted = Stylish::stylishFormat($difference);
-                return $formatted;
-            default:
-                exit("Unknown format '$format'.\n");
-        }
+        $formattedDiff = match ($format) {
+            'stylish' => Stylish::stylishFormat($difference),
+            'plain'   => Plain::plainFormat($difference),
+            default   => exit("Unknown format '$format'.\n")
+        };
+
+        return $formattedDiff;
     }
 }
