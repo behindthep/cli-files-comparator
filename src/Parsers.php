@@ -15,17 +15,19 @@ class Parsers
         throw new \Exception("File not found", 1);
     }
 
-    public static function parse(string $pathToFile): array|string
+    public static function parse(string $pathToFile): array
     {
         $content   = self::getFileContent($pathToFile);
         $extension = pathinfo($pathToFile, PATHINFO_EXTENSION);
 
-        $parsedFile = match ($extension) {
-            'json'        => json_decode($content, true),
-            'yml', 'yaml' => Yaml::parse($content),
-            default       => exit("Unsupported format '$extension' of incoming file.\n"),
-        };
-
-        return $parsedFile;
+        switch ($extension) {
+            case 'json':
+                return json_decode($content, true);
+            case 'yml':
+            case 'yaml':
+                return Yaml::parse($content);
+            default:
+                throw new \Exception("Unsupported format of incoming file!", 1);
+        }
     }
 }
