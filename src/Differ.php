@@ -7,16 +7,14 @@ class Differ
     /**
      * Метод генерирует разницу между двумя файлами (структурами данных) по определённому формату
      */
-    public function genDiff(string $pathToFirstFile, string $pathToSecondFile, string $format = 'stylish'): string
+    public static function genDiff(string $pathToFirstFile, string $pathToSecondFile, string $format = 'stylish'): string
     {
-        $parser = new Parsers();
-        $parsedFirstFile  = $parser->parse($pathToFirstFile);
-        $parsedSecondFile = $parser->parse($pathToSecondFile);
+        $parsedFirstFile  = Parsers::parse($pathToFirstFile);
+        $parsedSecondFile = Parsers::parse($pathToSecondFile);
 
-        $diff = $this->makeDiff($parsedFirstFile, $parsedSecondFile);
+        $diff = self::makeDiff($parsedFirstFile, $parsedSecondFile);
 
-        $formatter = new Formatters();
-        $result = $formatter->makeFormat($diff, $format);
+        $result = Formatters::makeFormat($diff, $format);
 
         return $result;
     }

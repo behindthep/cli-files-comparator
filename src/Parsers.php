@@ -12,9 +12,9 @@ class Parsers
         return $content;
     }
 
-    public function parse(string $pathToFile): array|string
+    public static function parse(string $pathToFile): array|string
     {
-        $content = $this->getFileContent($pathToFile);
+        $content = self::getFileContent($pathToFile);
         $extension = pathinfo($pathToFile, PATHINFO_EXTENSION);
 
         $parsedFile = match ($extension) {

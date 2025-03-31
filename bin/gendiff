@@ -28,8 +28,7 @@ DOC;
 
 $args = Docopt::handle($doc, ['version'=>'gendiff v. 1.0']);
 
-$differ = new Differ();
-$diff   = $differ->genDiff($args['<firstFile>'], $args['<secondFile>'], $args['--format']);
+$diff = Differ::genDiff($args['<firstFile>'], $args['<secondFile>'], $args['--format']);
 // bin/gendiff tests/fixtures/file1.json tests/fixtures/file2.json
 // bin/gendiff tests/fixtures/file3.json tests/fixtures/file4.json
 

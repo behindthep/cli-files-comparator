@@ -4,9 +4,9 @@ namespace Diff\Comparator\Formatters;
 
 class Stylish
 {
-    public function stylishFormat(array $diff): string
+    public static function stylishFormat(array $diff): string
     {
-        $formattedDiff = $this->makeStringFromDiff($diff);
+        $formattedDiff = self::makeStringFromDiff($diff);
         $result = implode("\n", $formattedDiff);
         return "{\n$result\n}\n";
     }

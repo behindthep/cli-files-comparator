@@ -6,12 +6,11 @@ use Diff\Comparator\Formatters\Stylish;
 
 class Formatters
 {
-    public function makeFormat(array $difference, string $format): string
+    public static function makeFormat(array $difference, string $format): string
     {
         switch ($format) {
             case 'stylish':
-                $stylish = new Stylish();
-                $formatted = $stylish->stylishFormat($difference);
+                $formatted = Stylish::stylishFormat($difference);
                 return $formatted;
             default:
                 exit("Unknown format '$format'.\n");
