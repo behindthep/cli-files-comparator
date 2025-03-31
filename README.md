@@ -1,4 +1,4 @@
-# diff-comp
+# difference comparator
 
 [![PHP CI](https://github.com/behindthep/difference-comparator/actions/workflows/workflow.yml/badge.svg)](https://github.com/behindthep/difference-comparator/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/maintainability)](https://codeclimate.com/github/behindthep/difference-comparator/maintainability)
