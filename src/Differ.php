@@ -4,15 +4,12 @@ namespace Diff\Comparator;
 
 class Differ
 {
-    /**
-     * Метод генерирует разницу между двумя файлами (структурами данных) по определённому формату
-     */
     public static function genDiff(string $pathToFile1, string $pathToFile2, string $format = 'stylish'): string
     {
-        $parsedFirstFile  = Parsers::parse($pathToFile1);
-        $parsedSecondFile = Parsers::parse($pathToFile2);
+        $parsedFile1  = Parsers::parse($pathToFile1);
+        $parsedFile2  = Parsers::parse($pathToFile2);
 
-        $difference    = self::makeDiff($parsedFirstFile, $parsedSecondFile);
+        $difference    = self::makeDiff($parsedFile1, $parsedFile2);
         $formattedDiff = Formatters::makeFormat($difference, $format);
 
         return $formattedDiff;
