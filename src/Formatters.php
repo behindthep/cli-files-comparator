@@ -2,18 +2,17 @@
 
 namespace Diff\Comparator;
 
-use Diff\Comparator\Formatters\{Stylish, Plain};
+use Diff\Comparator\Formatters\{Stylish, Plain, Json};
 
 class Formatters
 {
     public static function makeFormat(array $difference, string $format): string
     {
-        $formattedDiff = match ($format) {
+        return match ($format) {
             'stylish' => Stylish::stylishFormat($difference),
             'plain'   => Plain::plainFormat($difference),
-            default   => exit("Unknown format '$format'.\n")
+            'json'    => Json::jsonFormat($difference),
+            default   => throw new \Exception("Unknown format '$format'!", 1)
         };
-
-        return $formattedDiff;
     }
 }
