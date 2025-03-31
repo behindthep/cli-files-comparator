@@ -87,7 +87,7 @@ class Stylish
             case is_array($value):
                 $stringifiedArr = self::convertArrayToString($value, $level);
                 $spaces         = self::getSpaces($level);
-                return "{$stringifiedArr}{$spaces}";
+                return "{{$stringifiedArr}\n{$spaces}}";
             default:
                 return "$value";
         }
