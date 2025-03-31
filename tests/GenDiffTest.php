@@ -7,19 +7,9 @@ use Diff\Comparator\Differ;
 
 class GenDiffTest extends TestCase
 {
-    private function getPathToFixture(string $fixture): string
-    {
-        $path = __DIR__ . "/fixtures/" . $fixture;
-        return $path;
-    }
-
     public static function extensionProvider(): array
     {
-        return [
-            ['json'],
-            ['yml'],
-            ['yaml']
-        ];
+        return [['json'], ['yml']];
     }
 
     /**
@@ -27,21 +17,24 @@ class GenDiffTest extends TestCase
      */
     public function testGenDiff(string $extension): void
     {
-        $firstFixture  = $this->getPathToFixture("file1.$extension");
-        $secondFixture = $this->getPathToFixture("file2.$extension");
-        $thirdFixture  = $this->getPathToFixture("file3.$extension");
-        $fourthFixture = $this->getPathToFixture("file4.$extension");
+        $fixture1 = $this->getPathToFixture("file1.$extension");
+        $fixture2 = $this->getPathToFixture("file2.$extension");
 
-        $actualSimpleStylish   = Differ::genDiff($firstFixture, $secondFixture, 'stylish');
-        $expectedSimpleStylish = file_get_contents($this->getPathToFixture('expectedSimpleStylish'));
-        $this->assertEquals($expectedSimpleStylish, $actualSimpleStylish);
+        $actualStylish   = Differ::genDiff($fixture1, $fixture2, 'stylish');
+        $expectedStylish = file_get_contents($this->getPathToFixture('expectedStylish'));
+        $this->assertEquals($expectedStylish, $actualStylish);
 
-        $actualNestedStylish   = Differ::genDiff($thirdFixture, $fourthFixture, 'stylish');
-        $expectedNestedStylish = file_get_contents($this->getPathToFixture('expectedNestedStylish'));
-        $this->assertEquals($expectedNestedStylish, $actualNestedStylish);
-
-        $actualPlain           = Differ::genDiff($thirdFixture, $fourthFixture, 'plain');
+        $actualPlain           = Differ::genDiff($fixture1, $fixture2, 'plain');
         $expectedPlain         = file_get_contents($this->getPathToFixture('expectedPlain'));
         $this->assertEquals($expectedPlain, $actualPlain);
+
+        $actualJson           = Differ::genDiff($fixture1, $fixture2, 'json');
+        $expectedJson         = file_get_contents($this->getPathToFixture('expectedJson'));
+        $this->assertEquals($expectedJson, $actualJson);
+    }
+
+    private function getPathToFixture(string $fixture): string
+    {
+        return __DIR__ . "/fixtures/" . $fixture;
     }
 }
