@@ -4,33 +4,32 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/maintainability)](https://codeclimate.com/github/behindthep/difference-comparator/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/test_coverage)](https://codeclimate.com/github/behindthep/difference-comparator/test_coverage)
 
-### Вычислитель отличий – программа, определяющая разницу между двумя структурами данных. Возможности утилиты:
+### Косольная утилита для определеления разницы между двумя структурами данных.
 
-* Поддержка разных входных форматов: yaml и json
+* Поддержка входных форматов yaml и json
 * Генерация отчета в виде plain text, stylish и json
 
-### Требования:
-php >= 8
-
-composer
+#### Требования:
+- php >= 8
 
 ### Установка:
 ```bash
 git clone git@github.com:behindthep/difference-comparator.git
-
 make install
 ```
-### Установка и тестирование:
-[![asciicast](https://asciinema.org/a/FPx75wNoViucyHrOw8npouUgm.svg)](https://asciinema.org/a/FPx75wNoViucyHrOw8npouUgm)
 
-### Краткая помощь по использованию (gendiff -h). Пример входных файлов:
-[![asciicast](https://asciinema.org/a/foDhD4jeEkQL3A5CZPZN8kc0I.svg)](https://asciinema.org/a/foDhD4jeEkQL3A5CZPZN8kc0I)
+#### Пример вывода json файла в формате stylish:
 
-### Формат вывода отчёта stylish (по умолчанию):
-[![asciicast](https://asciinema.org/a/KWvWESuHYdUidPyaK0L9WaHKQ.svg)](https://asciinema.org/a/KWvWESuHYdUidPyaK0L9WaHKQ)
+```bash
+bin/gendiff --format stylish tests/fixtures/file1.json tests/fixtures/file2.json
+```
 
-### Формат вывода отчёта plain:
-[![asciicast](https://asciinema.org/a/pfitB2aBwCtcbxbkMwTfn6uBH.svg)](https://asciinema.org/a/pfitB2aBwCtcbxbkMwTfn6uBH)
+[![asciicast](https://asciinema.org/a/yLMdpouIafxzQNlCYR2dUt4FR.svg)](https://asciinema.org/a/yLMdpouIafxzQNlCYR2dUt4FR)
 
-### Формат вывода отчёта json:
-[![asciicast](https://asciinema.org/a/eUDJZW7KdtHuWemYFVHLzNstc.svg)](https://asciinema.org/a/eUDJZW7KdtHuWemYFVHLzNstc)
+#### Пример вывода yml файла в формате plain:
+
+```bash
+bin/gendiff --format plain tests/fixtures/file1.yml tests/fixtures/file2.yml
+```
+
+[![asciicast](https://asciinema.org/a/DmjkbBkD3auZ0L4fZJbstZOAn.svg)](https://asciinema.org/a/DmjkbBkD3auZ0L4fZJbstZOAn)
