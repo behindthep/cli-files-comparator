@@ -22,11 +22,48 @@ class Differ
         return array_map(fn($key) => self::checkDifference($key, $parsedFile1, $parsedFile2), $uniqueKeys);
     }
 
-    private static function makeDiff(array $parsedFirstFile, array $parsedSecondFile): array
+    private static function checkDifference(mixed $key, array $parsedFile1, array $parsedFile2): array
     {
-        $uniqueKeys = self::getSortedUniqueKeys($parsedFirstFile, $parsedSecondFile);
+        $firstValue  = $parsedFile1[$key] ?? null;
+        $secondValue = $parsedFile2[$key] ?? null;
 
-        $difference = [];
+        if (is_array($firstValue) && is_array($secondValue)) {
+            return [
+                'status' => 'nested',
+                'key'    => $key,
+                'value1' => self::makeDiff($firstValue, $secondValue),
+                'value2' => null
+            ];
+        } elseif (!array_key_exists($key, $parsedFile1)) {
+            return [
+                'status' => 'added',
+                'key'    => $key,
+                'value1' => $secondValue,
+                'value2' => null
+            ];
+        } elseif (!array_key_exists($key, $parsedFile2)) {
+            return [
+                'status' => 'removed',
+                'key'    => $key,
+                'value1' => $firstValue,
+                'value2' => null
+            ];
+        } elseif ($firstValue === $secondValue) {
+            return [
+                'status' => 'unchanged',
+                'key'    => $key,
+                'value1' => $firstValue,
+                'value2' => null
+            ];
+        } else {
+            return [
+                'status' => 'updated',
+                'key'    => $key,
+                'value1' => $firstValue,
+                'value2' => $secondValue
+            ];
+        }
+    }
 
         foreach ($uniqueKeys as $key) {
             $firstValue  = $parsedFirstFile[$key]  ?? null;
