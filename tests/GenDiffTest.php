@@ -7,6 +7,12 @@ use Diff\Comparator\Differ;
 
 class GenDiffTest extends TestCase
 {
+    private function getPathToFixture(string $fixture): string
+    {
+        $path = __DIR__ . "/fixtures/" . $fixture;
+        return $path;
+    }
+
     public static function extensionProvider(): array
     {
         return [
@@ -26,22 +32,16 @@ class GenDiffTest extends TestCase
         $thirdFixture  = $this->getPathToFixture("file3.$extension");
         $fourthFixture = $this->getPathToFixture("file4.$extension");
 
-        $actualSimple   = Differ::genDiff($firstFixture, $secondFixture, 'stylish');
-        $expectedSimple = file_get_contents($this->getPathToFixture('expectedSimple'));
-        $this->assertEquals($expectedSimple, $actualSimple);
+        $actualSimpleStylish   = Differ::genDiff($firstFixture, $secondFixture, 'stylish');
+        $expectedSimpleStylish = file_get_contents($this->getPathToFixture('expectedSimpleStylish'));
+        $this->assertEquals($expectedSimpleStylish, $actualSimpleStylish);
 
-        $actualStylish   = Differ::genDiff($thirdFixture, $fourthFixture, 'stylish');
-        $expectedStylish = file_get_contents($this->getPathToFixture('expectedStylish'));
-        $this->assertEquals($expectedStylish, $actualStylish);
+        $actualNestedStylish   = Differ::genDiff($thirdFixture, $fourthFixture, 'stylish');
+        $expectedNestedStylish = file_get_contents($this->getPathToFixture('expectedNestedStylish'));
+        $this->assertEquals($expectedNestedStylish, $actualNestedStylish);
 
-        $actualPlain   = Differ::genDiff($thirdFixture, $fourthFixture, 'plain');
-        $expectedPlain = file_get_contents($this->getPathToFixture('expectedPlain'));
+        $actualPlain           = Differ::genDiff($thirdFixture, $fourthFixture, 'plain');
+        $expectedPlain         = file_get_contents($this->getPathToFixture('expectedPlain'));
         $this->assertEquals($expectedPlain, $actualPlain);
-    }
-
-    private function getPathToFixture(string $fixture): string
-    {
-        $path = __DIR__ . "/fixtures/" . $fixture;
-        return $path;
     }
 }
