@@ -8,11 +8,11 @@ class Parsers
 {
     private static function getFileContent(string $pathToFile): string
     {
-        $content = is_file($pathToFile)
-        ? file_get_contents($pathToFile)
-        : exit("File '$pathToFile' not found.\n");
+        if (is_file($pathToFile)) {
+            return file_get_contents($pathToFile);
+        }
 
-        return $content;
+        throw new \Exception("File not found", 1);
     }
 
     public static function parse(string $pathToFile): array|string
