@@ -34,11 +34,3 @@ $format      = $args['--format'];
 
 $difference  = Differ::genDiff($pathToFile1, $pathToFile2, $format);
 echo $difference;
-
-// bin/gendiff --format stylish tests/fixtures/file1.json tests/fixtures/file2.json
-// bin/gendiff --format plain tests/fixtures/file1.json tests/fixtures/file2.json
-// bin/gendiff --format json tests/fixtures/file1.json tests/fixtures/file2.json
-
-// bin/gendiff --format stylish tests/fixtures/file1.yml tests/fixtures/file2.yml
-// bin/gendiff --format plain tests/fixtures/file1.yml tests/fixtures/file2.yml
-// bin/gendiff --format json tests/fixtures/file1.yml tests/fixtures/file2.yml
