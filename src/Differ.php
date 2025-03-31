@@ -15,16 +15,11 @@ class Differ
         return $formattedDiff;
     }
 
-    private static function getSortedUniqueKeys(array $associativeArr1, array $associativeArr2): array
+    private static function makeDiff(array $parsedFile1, array $parsedFile2): array
     {
-        $keys1  = array_keys($associativeArr1);
-        $keys2  = array_keys($associativeArr2);
+        $uniqueKeys = self::getSortedUniqueKeys($parsedFile1, $parsedFile2);
 
-        $combinedKeys  = array_merge($keys1, $keys2);
-        $uniqueKeys    = array_unique($combinedKeys);
-        sort($uniqueKeys);
-
-        return $uniqueKeys;
+        return array_map(fn($key) => self::checkDifference($key, $parsedFile1, $parsedFile2), $uniqueKeys);
     }
 
     private static function makeDiff(array $parsedFirstFile, array $parsedSecondFile): array
