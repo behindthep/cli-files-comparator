@@ -2,7 +2,7 @@
 
 namespace Diff\Comparator;
 
-use function Functional\sort;
+use function Functional\sort as fsort;
 
 class Differ
 {
@@ -78,6 +78,6 @@ class Differ
         /**
          *
          */
-        return sort($uniqueKeys, fn($left, $right) => strcmp($left, $right));
+        return fsort($uniqueKeys, fn($left, $right) => strcmp($left, $right));
     }
 }
