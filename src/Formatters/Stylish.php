@@ -8,7 +8,6 @@ class Stylish
     {
         $formattedDiff   = self::makeStringsFromDiff($difference);
         $stringifiedDiff = implode("\n", $formattedDiff);
-
         return "{\n{$stringifiedDiff}\n}\n";
     }
 
@@ -17,7 +16,7 @@ class Stylish
         $nextLevel = $level + 1;
         $spaces    = self::getFourSpaces($level);
 
-        return array_map(function ($node) use ($spaces, $nextLevel) {
+        $formattedDiff = array_map(function ($node) use ($spaces, $nextLevel) {
             [
                 'status' => $status,
                 'key'    => $key,
@@ -25,37 +24,55 @@ class Stylish
                 'value2' => $value2
             ] = $node;
 
-            return match ($status) {
+            $formattedValue = match ($status) {
                 'nested'    => self::formatNested($key, $value1, $spaces, $nextLevel),
                 'unchanged' => self::formatUnchanged($key, $value1, $spaces, $nextLevel),
                 'added'     => self::formatAdded($key, $value1, $spaces, $nextLevel),
                 'removed'   => self::formatRemoved($key, $value1, $spaces, $nextLevel),
                 default     => self::formatUpdated($key, $value1, $value2, $spaces, $nextLevel)
             };
+            return $formattedValue;
         }, $difference);
+        return $formattedDiff;
     }
 
-    private static function formatNested(mixed $key, mixed $value, string $spaces, int $nextLevel): string
-    {
-        $nested = self::makeStringsFromDiff($value, $nextLevel);
+    private static function formatNested(
+        mixed $key,
+        mixed $value,
+        string $spaces,
+        int $nextLevel
+    ): string {
+        $nested          = self::makeStringsFromDiff($value, $nextLevel);
         $stringifiedNest = implode("\n", $nested);
         return "$spaces    $key: {\n{$stringifiedNest}\n{$spaces}    }";
     }
 
-    private static function formatUnchanged(mixed $key, mixed $value, string $spaces, int $nextLevel): string
-    {
+    private static function formatUnchanged(
+        mixed $key,
+        mixed $value,
+        string $spaces,
+        int $nextLevel
+    ): string {
         $stringifiedValue = self::stringifyValue($value, $nextLevel);
         return "$spaces    $key: $stringifiedValue";
     }
 
-    private static function formatAdded(mixed $key, mixed $value, string $spaces, int $nextLevel): string
-    {
+    private static function formatAdded(
+        mixed $key,
+        mixed $value,
+        string $spaces,
+        int $nextLevel
+    ): string {
         $stringifiedValue = self::stringifyValue($value, $nextLevel);
         return "$spaces  + $key: $stringifiedValue";
     }
 
-    private static function formatRemoved(mixed $key, mixed $value, string $spaces, int $nextLevel): string
-    {
+    private static function formatRemoved(
+        mixed $key,
+        mixed $value,
+        string $spaces,
+        int $nextLevel
+    ): string {
         $stringifiedValue = self::stringifyValue($value, $nextLevel);
         return "$spaces  - $key: $stringifiedValue";
     }
@@ -96,13 +113,13 @@ class Stylish
     private static function convertArrayToString(array $arr, int $level): string
     {
         $nextLevel = $level + 1;
+        $keys      = array_keys($arr);
 
         $formattedArr = array_map(function ($key) use ($arr, $nextLevel) {
             $value  = self::stringifyValue($arr[$key], $nextLevel);
             $spaces = self::getFourSpaces($nextLevel);
             return "\n{$spaces}{$key}: $value";
-        }, array_keys($arr));
-
+        }, $keys);
         return implode('', $formattedArr);
     }
 }
