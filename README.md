@@ -6,7 +6,7 @@
 
 ## Specification
 
-### Console utility for determining the difference between two data structures
+#### Console utility for determining the difference between two data structures
 
 - Support for *yaml* and *json* input formats
 - Generate report in *plain text, stylish and json* format
