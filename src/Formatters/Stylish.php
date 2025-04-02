@@ -14,8 +14,8 @@ class Stylish
 
     private static function makeStringsFromDiff(array $difference, int $level = 0): array
     {
-        $spaces    = self::getSpaces($level);
         $nextLevel = $level + 1;
+        $spaces    = self::getFourSpaces($level);
 
         return array_map(function ($node) use ($spaces, $nextLevel) {
             [
@@ -72,9 +72,9 @@ class Stylish
         return "$spaces  - $key: {$stringifiedValue1}\n{$spaces}  + $key: $stringifiedValue2";
     }
 
-    private static function getSpaces(int $numberOfRepetitions): string
+    private static function getFourSpaces(int $spacesSets): string
     {
-        return str_repeat('    ', $numberOfRepetitions);
+        return str_repeat('    ', $spacesSets);
     }
 
     private static function stringifyValue(mixed $value, int $level): mixed
@@ -86,7 +86,7 @@ class Stylish
                 return $value ? 'true' : 'false';
             case is_array($value):
                 $stringifiedArr = self::convertArrayToString($value, $level);
-                $spaces         = self::getSpaces($level);
+                $spaces         = self::getFourSpaces($level);
                 return "{{$stringifiedArr}\n{$spaces}}";
             default:
                 return "$value";
@@ -99,7 +99,7 @@ class Stylish
 
         $formattedArr = array_map(function ($key) use ($arr, $nextLevel) {
             $value  = self::stringifyValue($arr[$key], $nextLevel);
-            $spaces = self::getSpaces($nextLevel);
+            $spaces = self::getFourSpaces($nextLevel);
             return "\n{$spaces}{$key}: $value";
         }, array_keys($arr));
 
