@@ -11,7 +11,6 @@ class Parsers
         if (is_file($pathToFile)) {
             return file_get_contents($pathToFile);
         }
-
         throw new \Exception("File not found", 1);
     }
 
