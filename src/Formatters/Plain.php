@@ -10,22 +10,19 @@ class Plain
     {
         $formattedDiff   = self::makeStringsFromDiff($difference);
         $stringifiedDiff = implode("\n", $formattedDiff);
-
         return "{$stringifiedDiff}\n";
     }
 
     private static function makeStringsFromDiff(array $difference, string $path = ''): array
     {
-        /**
-         *
-         */
         $arrayOfDifferences = flatten(array_map(function ($node) use ($path) {
             [
                 'status' => $status,
-                'key' => $key,
+                'key'    => $key,
                 'value1' => $value1,
                 'value2' => $value2
             ] = $node;
+
             $fullPath = "{$path}{$key}";
 
             switch ($status) {
@@ -44,7 +41,6 @@ class Plain
                     return;
             }
         }, $difference));
-
         return array_filter($arrayOfDifferences, fn($value) => !is_null($value));
     }
 
