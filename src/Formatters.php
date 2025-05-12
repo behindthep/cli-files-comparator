@@ -3,8 +3,8 @@
 namespace Gendiff;
 
 use Gendiff\Formatters\{
-    Stylish, 
-    Plain, 
+    Stylish,
+    Plain,
     Json,
 };
 

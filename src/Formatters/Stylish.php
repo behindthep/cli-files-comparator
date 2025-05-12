@@ -16,23 +16,26 @@ class Stylish
         $nextLevel = $level + 1;
         $spaces    = self::getFourSpaces($level);
 
-        $formattedDiff = array_map(function ($node) use ($spaces, $nextLevel) {
-            [
+        $formattedDiff = array_map(
+            function ($node) use ($spaces, $nextLevel) {
+                [
                 'status' => $status,
                 'key'    => $key,
                 'value1' => $value1,
                 'value2' => $value2
-            ] = $node;
+                ] = $node;
 
-            $formattedValue = match ($status) {
-                'nested'    => self::formatNested($key, $value1, $spaces, $nextLevel),
-                'unchanged' => self::formatUnchanged($key, $value1, $spaces, $nextLevel),
-                'added'     => self::formatAdded($key, $value1, $spaces, $nextLevel),
-                'removed'   => self::formatRemoved($key, $value1, $spaces, $nextLevel),
-                default     => self::formatUpdated($key, $value1, $value2, $spaces, $nextLevel)
-            };
-            return $formattedValue;
-        }, $difference);
+                $formattedValue = match ($status) {
+                    'nested'    => self::formatNested($key, $value1, $spaces, $nextLevel),
+                    'unchanged' => self::formatUnchanged($key, $value1, $spaces, $nextLevel),
+                    'added'     => self::formatAdded($key, $value1, $spaces, $nextLevel),
+                    'removed'   => self::formatRemoved($key, $value1, $spaces, $nextLevel),
+                    default     => self::formatUpdated($key, $value1, $value2, $spaces, $nextLevel)
+                };
+                return $formattedValue;
+            },
+            $difference
+        );
         return $formattedDiff;
     }
 
@@ -115,11 +118,14 @@ class Stylish
         $nextLevel = $level + 1;
         $keys = array_keys($arr);
 
-        $formattedArr = array_map(function ($key) use ($arr, $nextLevel) {
-            $value = self::stringifyValue($arr[$key], $nextLevel);
-            $spaces = self::getFourSpaces($nextLevel);
-            return "\n{$spaces}{$key}: $value";
-        }, $keys);
+        $formattedArr = array_map(
+            function ($key) use ($arr, $nextLevel) {
+                $value = self::stringifyValue($arr[$key], $nextLevel);
+                $spaces = self::getFourSpaces($nextLevel);
+                return "\n{$spaces}{$key}: $value";
+            },
+            $keys
+        );
         return implode('', $formattedArr);
     }
 }

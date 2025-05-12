@@ -2,8 +2,9 @@
 
 namespace Gendiff;
 
-use function Functional\sort as fsort;
 use Gendiff\Parser;
+
+use function Functional\sort as fsort;
 
 class Differ
 {

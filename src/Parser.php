@@ -12,8 +12,8 @@ class Parser
         if (!file_exists($absolutePath)) {
             throw new \Exception("File does not exist", 1);
         }
-        
-        return file_get_contents($path);        
+
+        return file_get_contents($path);
     }
 
     public static function parse(string $path): array
