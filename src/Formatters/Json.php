@@ -1,6 +1,6 @@
 <?php
 
-namespace Diff\Comparator\Formatters;
+namespace Gendiff\Formatters;
 
 class Json
 {

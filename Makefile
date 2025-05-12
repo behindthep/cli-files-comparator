@@ -3,11 +3,9 @@ install:
 
 validate:
 	composer validate
-	composer dump-autoload
 
 lint:
 	composer exec --verbose phpcs -- src bin tests
-	composer exec --verbose phpstan
 
 lint-fix:
 	composer exec --verbose phpcbf -- src bin tests

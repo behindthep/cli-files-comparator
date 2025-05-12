@@ -1,16 +1,16 @@
 #!/usr/bin/env php
+
 <?php
 
 $autoloadPath1 = __DIR__ . '/../../../autoload.php';
 $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
-
 if (file_exists($autoloadPath1)) {
     require_once $autoloadPath1;
 } else {
     require_once $autoloadPath2;
 }
 
-use Diff\Comparator\Differ;
+use Gendiff\Differ;
 
 $doc = <<<DOC
 Generate diff
@@ -26,11 +26,16 @@ Options:
   --format <fmt>                Report format [default: stylish]
 DOC;
 
-$args        = Docopt::handle($doc, ['version'=>'gendiff v. 1.0']);
+$params = [
+    'version' => '1.0.0'
+];
 
-$pathToFile1 = $args['<firstFile>'];
-$pathToFile2 = $args['<secondFile>'];
-$format      = $args['--format'];
+$args = Docopt::handle($doc, $params);
 
-$difference  = Differ::genDiff($pathToFile1, $pathToFile2, $format);
-echo $difference;
+$diff = Differ::genDiff(
+    $args['<firstFile>'], 
+    $args['<secondFile>'],
+    $args['--format']
+);
+
+print_r($diff);

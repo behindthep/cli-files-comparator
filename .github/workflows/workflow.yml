@@ -5,40 +5,39 @@ on:
   - pull_request
 
 jobs:
-  # build имя задания. их может быть больше одного
   build:
+    name: Run
+    runs-on: ${{ matrix.operating-systems }}
+    strategy:
+      matrix:
+        operating-systems: [ubuntu-latest]
+        php-versions: ['8.3']
 
-    runs-on: ubuntu-latest
-    # список шагов экшена — выполняет задачу 
     steps:
-        # Check-out repository under GitHub workspace.
-        # checkout — клонирует репозиторий в директорию где запускаются шаги задания
-        # https://github.com/actions/checkout
       - uses: actions/checkout@v4
-        # Step's name
+
       - name: Setup PHP
-        # Action gives to setup the PHP environment to test application
-        # https://github.com/shivammathur/setup-php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3.6'
+          php-version: ${{ matrix.php-versions }}
+
       - name: Install
-        # в run может быть произвольная bash-команда
         run: make install
+
+      - name: Validate
+        run: make validate
+
       - name: Run linter
         run: make lint
+
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: make test
-      # Publish code coverage on Code Climate
-      # https://github.com/paambaati/codeclimate-action
-      # NOTE: uncomment for using workflow
+
       - name: Run test & publish code coverage
         uses: paambaati/codeclimate-action@v5
-        # Add Code Climate secret key. SECRETS ENV VARIABLE (for safety)
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: make test-coverage
-          # coverageLocations: ${{ github.workplace }}/build/logs/clover.xml:clover
           coverageLocations: build/logs/clover.xml:clover
           debug: true

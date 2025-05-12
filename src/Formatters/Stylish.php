@@ -1,6 +1,6 @@
 <?php
 
-namespace Diff\Comparator\Formatters;
+namespace Gendiff\Formatters;
 
 class Stylish
 {
@@ -42,7 +42,7 @@ class Stylish
         string $spaces,
         int $nextLevel
     ): string {
-        $nested          = self::makeStringsFromDiff($value, $nextLevel);
+        $nested = self::makeStringsFromDiff($value, $nextLevel);
         $stringifiedNest = implode("\n", $nested);
         return "$spaces    $key: {\n{$stringifiedNest}\n{$spaces}    }";
     }
@@ -103,7 +103,7 @@ class Stylish
                 return $value ? 'true' : 'false';
             case is_array($value):
                 $stringifiedArr = self::convertArrayToString($value, $level);
-                $spaces         = self::getFourSpaces($level);
+                $spaces = self::getFourSpaces($level);
                 return "{{$stringifiedArr}\n{$spaces}}";
             default:
                 return "$value";
@@ -113,10 +113,10 @@ class Stylish
     private static function convertArrayToString(array $arr, int $level): string
     {
         $nextLevel = $level + 1;
-        $keys      = array_keys($arr);
+        $keys = array_keys($arr);
 
         $formattedArr = array_map(function ($key) use ($arr, $nextLevel) {
-            $value  = self::stringifyValue($arr[$key], $nextLevel);
+            $value = self::stringifyValue($arr[$key], $nextLevel);
             $spaces = self::getFourSpaces($nextLevel);
             return "\n{$spaces}{$key}: $value";
         }, $keys);

@@ -1,9 +1,9 @@
 <?php
 
-namespace Diff\Comparator\Tests;
+namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Diff\Comparator\Differ;
+use Gendiff\Differ;
 
 class GenDiffTest extends TestCase
 {
