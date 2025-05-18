@@ -4,8 +4,8 @@ namespace Gendiff\Formatters;
 
 class Json
 {
-    public static function jsonFormat(array $difference): string
+    public static function render(array $data): string
     {
-        return json_encode($difference, JSON_PRETTY_PRINT) . "\n";
+        return json_encode($data, JSON_THROW_ON_ERROR);
     }
 }

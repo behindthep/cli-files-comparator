@@ -1,6 +1,7 @@
 {
-  "name": "behindthep/diff-comp",
+  "name": "behindthep/cli-files-comparator",
   "description": "Compares two configuration files and shows a difference",
+  "type": "project",
   "license": "MIT",
   "authors": [
     {

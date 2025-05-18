@@ -2,42 +2,83 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase;
 use Gendiff\Differ;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GenDiffTest extends TestCase
 {
-    public static function extensionProvider(): array
+    protected string $fixturesPath = __DIR__ . '/fixtures';
+
+    protected function getExpectedPath(string $formatter): string
+    {
+        return "{$this->fixturesPath}/expected-{$formatter}.txt";
+    }
+
+    protected function getFirstFilePath(string $type): string
+    {
+        return "{$this->fixturesPath}/file1.{$type}";
+    }
+    protected function getSecondFilePath(string $type): string
+    {
+        return "{$this->fixturesPath}/file2.{$type}";
+    }
+
+    public static function dataProvider(): array
     {
         return [
-            ['json'],
-            ['yml']
+            'json - json' => [
+                'json',
+                'json',
+            ],
+            'json - yml' => [
+                'json',
+                'yml',
+            ],
+            'yml - yml' => [
+                'yml',
+                'yml',
+            ],
         ];
     }
 
-    /**
-     * @dataProvider extensionProvider
-     */
-    public function testGenDiff(string $extension): void
+    #[DataProvider('dataProvider')]
+    public function testDefault(string $firstFileType, string $secondFileType): void
     {
-        $fixture1        = $this->getPathToFixture("file1.$extension");
-        $fixture2        = $this->getPathToFixture("file2.$extension");
-
-        $actualStylish   = Differ::genDiff($fixture1, $fixture2, 'stylish');
-        $expectedStylish = file_get_contents($this->getPathToFixture('expectedStylish'));
-        $this->assertEquals($expectedStylish, $actualStylish);
-
-        $actualPlain     = Differ::genDiff($fixture1, $fixture2, 'plain');
-        $expectedPlain   = file_get_contents($this->getPathToFixture('expectedPlain'));
-        $this->assertEquals($expectedPlain, $actualPlain);
-
-        $actualJson      = Differ::genDiff($fixture1, $fixture2, 'json');
-        $expectedJson    = file_get_contents($this->getPathToFixture('expectedJson'));
-        $this->assertEquals($expectedJson, $actualJson);
+        $formatter = "stylish";
+        $first = $this->getFirstFilePath($firstFileType);
+        $second = $this->getSecondFilePath($secondFileType);
+        $expected = trim(file_get_contents($this->getExpectedPath($formatter)));
+        $this->assertEquals($expected, trim(Differ::genDiff($first, $second)));
     }
 
-    private function getPathToFixture(string $fixture): string
+    #[DataProvider('dataProvider')]
+    public function testStylish(string $firstFileType, string $secondFileType): void
     {
-        return __DIR__ . "/fixtures/" . $fixture;
+        $formatter = "stylish";
+        $first = $this->getFirstFilePath($firstFileType);
+        $second = $this->getSecondFilePath($secondFileType);
+        $expected = trim(file_get_contents($this->getExpectedPath($formatter)));
+        $this->assertEquals($expected, trim(Differ::genDiff($first, $second, $formatter)));
+    }
+
+    #[DataProvider('dataProvider')]
+    public function testJson(string $firstFileType, string $secondFileType): void
+    {
+        $formatter = "json";
+        $first = $this->getFirstFilePath($firstFileType);
+        $second = $this->getSecondFilePath($secondFileType);
+        $expected = trim(file_get_contents($this->getExpectedPath($formatter)));
+        $this->assertEquals($expected, trim(Differ::genDiff($first, $second, $formatter)));
+    }
+
+    #[DataProvider('dataProvider')]
+    public function testPlain(string $firstFileType, string $secondFileType): void
+    {
+        $formatter = "plain";
+        $first = $this->getFirstFilePath($firstFileType);
+        $second = $this->getSecondFilePath($secondFileType);
+        $expected = trim(file_get_contents($this->getExpectedPath($formatter)));
+        $this->assertEquals($expected, trim(Differ::genDiff($first, $second, $formatter)));
     }
 }

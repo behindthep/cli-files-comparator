@@ -1,4 +1,3 @@
----
 common:
   follow: false
   setting1: Value 1
@@ -11,13 +10,24 @@ common:
     ops: vops
     doge:
       wow: so much
+
 group1:
   foo: bar
   baz: bars
   nest: str
+
 group3:
   deep:
     id:
       number: 45
   fee: 100500
-...
+
+group4:
+  default: ""
+  foo: null
+  isNested: none
+  key: false
+  nest:
+    bar: 0
+  someKey: true
+  type: bar

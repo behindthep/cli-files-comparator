@@ -2,130 +2,110 @@
 
 namespace Gendiff\Formatters;
 
+use Gendiff\Differ;
+
 class Stylish
 {
-    public static function stylishFormat(array $difference): string
+    private const SPACECOUNT = 4;
+    private const REPLACER = ' ';
+    private const COMPARE_TEXT_SYMBOL_MAP = [
+        Differ::ADDED => '+',
+        Differ::DELETED => '-',
+        Differ::CHANGED => ' ',
+        Differ::NESTED => ' ',
+        Differ::UNCHANGED => ' ',
+    ];
+
+    public static function render(array $data): string
     {
-        $formattedDiff   = self::makeStringsFromDiff($difference);
-        $stringifiedDiff = implode("\n", $formattedDiff);
-        return "{\n{$stringifiedDiff}\n}\n";
+        $result = self::iter($data['children']);
+        return $result;
     }
 
-    private static function makeStringsFromDiff(array $difference, int $level = 0): array
+    private static function iter(array $value, int $depth = 1): string
     {
-        $nextLevel = $level + 1;
-        $spaces    = self::getFourSpaces($level);
+        $func = function ($val) use ($depth) {
+            if (!is_array($val)) {
+                return self::toString($val);
+            }
 
-        $formattedDiff = array_map(
-            function ($node) use ($spaces, $nextLevel) {
-                [
-                'status' => $status,
-                'key'    => $key,
-                'value1' => $value1,
-                'value2' => $value2
-                ] = $node;
+            if (!array_key_exists(0, $val) && !array_key_exists('type', $val)) {
+                return self::toString($val);
+            }
 
-                $formattedValue = match ($status) {
-                    'nested'    => self::formatNested($key, $value1, $spaces, $nextLevel),
-                    'unchanged' => self::formatUnchanged($key, $value1, $spaces, $nextLevel),
-                    'added'     => self::formatAdded($key, $value1, $spaces, $nextLevel),
-                    'removed'   => self::formatRemoved($key, $value1, $spaces, $nextLevel),
-                    default     => self::formatUpdated($key, $value1, $value2, $spaces, $nextLevel)
-                };
-                return $formattedValue;
-            },
-            $difference
+            $compare = $val['type'];
+            $delete = self::COMPARE_TEXT_SYMBOL_MAP[Differ::DELETED];
+            $add = self::COMPARE_TEXT_SYMBOL_MAP[Differ::ADDED];
+            $compareSymbol = self::COMPARE_TEXT_SYMBOL_MAP[$compare];
+            $key = $val['key'];
+
+            return match ($compare) {
+                Differ::CHANGED => self::structure($val['value1'], $key, $delete, $depth)
+                . self::structure($val['value2'], $key, $add, $depth),
+                Differ::NESTED => self::structure(
+                    self::iter($val['children'], $depth + 1),
+                    $key, $compareSymbol, $depth
+                ),
+                default => self::structure($val['value'], $key, $compareSymbol, $depth),
+            };
+        };
+
+        $result = array_map($func, $value);
+        $closeBracketIndentSize = $depth * self::SPACECOUNT;
+        $closeBracketIndent = $closeBracketIndentSize > 0
+        ? str_repeat(self::REPLACER, $closeBracketIndentSize - self::SPACECOUNT) : '';
+
+        return "{\n" . implode($result) . "{$closeBracketIndent}}";
+    }
+
+    private static function structure(mixed $value, string $key, string $compareSymbol, int $depth): string
+    {
+        $indentSize = ($depth * self::SPACECOUNT) - 2;
+        $currentIndent = str_repeat(self::REPLACER, $indentSize);
+        $depthNested = $depth + 1;
+        $valueStructured = self::depthStructuring($value, $depthNested);
+
+        $result = sprintf(
+            "%s%s %s: %s\n",
+            $currentIndent,
+            $compareSymbol,
+            $key,
+            $valueStructured,
         );
-        return $formattedDiff;
+        return $result;
     }
 
-    private static function formatNested(
-        mixed $key,
-        mixed $value,
-        string $spaces,
-        int $nextLevel
-    ): string {
-        $nested = self::makeStringsFromDiff($value, $nextLevel);
-        $stringifiedNest = implode("\n", $nested);
-        return "$spaces    $key: {\n{$stringifiedNest}\n{$spaces}    }";
-    }
-
-    private static function formatUnchanged(
-        mixed $key,
-        mixed $value,
-        string $spaces,
-        int $nextLevel
-    ): string {
-        $stringifiedValue = self::stringifyValue($value, $nextLevel);
-        return "$spaces    $key: $stringifiedValue";
-    }
-
-    private static function formatAdded(
-        mixed $key,
-        mixed $value,
-        string $spaces,
-        int $nextLevel
-    ): string {
-        $stringifiedValue = self::stringifyValue($value, $nextLevel);
-        return "$spaces  + $key: $stringifiedValue";
-    }
-
-    private static function formatRemoved(
-        mixed $key,
-        mixed $value,
-        string $spaces,
-        int $nextLevel
-    ): string {
-        $stringifiedValue = self::stringifyValue($value, $nextLevel);
-        return "$spaces  - $key: $stringifiedValue";
-    }
-
-    private static function formatUpdated(
-        mixed $key,
-        mixed $value1,
-        mixed $value2,
-        string $spaces,
-        int $nextLevel
-    ): string {
-        $stringifiedValue1 = self::stringifyValue($value1, $nextLevel);
-        $stringifiedValue2 = self::stringifyValue($value2, $nextLevel);
-        return "$spaces  - $key: {$stringifiedValue1}\n{$spaces}  + $key: $stringifiedValue2";
-    }
-
-    private static function getFourSpaces(int $spacesSets): string
+    private static function depthStructuring(mixed $value, int $depth): string
     {
-        return str_repeat('    ', $spacesSets);
-    }
-
-    private static function stringifyValue(mixed $value, int $level): mixed
-    {
-        switch (true) {
-            case is_null($value):
-                return 'null';
-            case is_bool($value):
-                return $value ? 'true' : 'false';
-            case is_array($value):
-                $stringifiedArr = self::convertArrayToString($value, $level);
-                $spaces = self::getFourSpaces($level);
-                return "{{$stringifiedArr}\n{$spaces}}";
-            default:
-                return "$value";
+        if (!is_array($value)) {
+            return self::toString($value);
         }
+
+        $indentSize = $depth * self::SPACECOUNT;
+        $currentIndent = str_repeat(self::REPLACER, $indentSize);
+
+        $fun = function ($key, $val) use ($depth, $currentIndent) {
+            return sprintf(
+                "%s%s: %s\n",
+                $currentIndent,
+                $key,
+                self::depthStructuring($val, $depth + 1),
+            );
+        };
+
+        $result = array_map($fun, array_keys($value), $value);
+        $closeBracketIndent = str_repeat(self::REPLACER, $indentSize - self::SPACECOUNT);
+
+        return "{\n" . implode($result) . "{$closeBracketIndent}}";
     }
 
-    private static function convertArrayToString(array $arr, int $level): string
+    private static function toString(mixed $value): string
     {
-        $nextLevel = $level + 1;
-        $keys = array_keys($arr);
-
-        $formattedArr = array_map(
-            function ($key) use ($arr, $nextLevel) {
-                $value = self::stringifyValue($arr[$key], $nextLevel);
-                $spaces = self::getFourSpaces($nextLevel);
-                return "\n{$spaces}{$key}: $value";
-            },
-            $keys
-        );
-        return implode('', $formattedArr);
+        return match (true) {
+            $value === true => 'true',
+            $value === false => 'false',
+            is_null($value) => 'null',
+            default => trim((string) $value, "'")
+        };
     }
 }

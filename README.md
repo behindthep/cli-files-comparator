@@ -4,27 +4,28 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/maintainability)](https://codeclimate.com/github/behindthep/difference-comparator/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/063f9edf4519fcaa134c/test_coverage)](https://codeclimate.com/github/behindthep/difference-comparator/test_coverage)
 
-## Specification
-
-#### Console utility for determining the difference between two data structures
+#### Console utility for determining the difference between two files
 
 - Support for *yaml* and *json* input formats
 - Generate report in *plain text, stylish and json* format
 
-## Requirements
+### Requirements
 
 - PHP >= 8
 
-## Installation
+### Setup
 
 ```bash
-git clone git@github.com:behindthep/difference-comparator.git
 make install
 ```
 
-## Usage
+### Help
 
-### Example of *json* file output in *stylish* format:
+```bash
+bin/gendiff -h
+```
+
+### Demo of *json* file output in *stylish* format:
 
 ```bash
 bin/gendiff --format stylish tests/fixtures/file1.json tests/fixtures/file2.json
@@ -32,7 +33,7 @@ bin/gendiff --format stylish tests/fixtures/file1.json tests/fixtures/file2.json
 
 [![asciicast](https://asciinema.org/a/yLMdpouIafxzQNlCYR2dUt4FR.svg)](https://asciinema.org/a/yLMdpouIafxzQNlCYR2dUt4FR)
 
-### Example of output of *yml* file in *plain* format:
+### Demo of *yml* file output in *plain* format:
 
 ```bash
 bin/gendiff --format plain tests/fixtures/file1.yml tests/fixtures/file2.yml

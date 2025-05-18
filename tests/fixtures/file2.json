@@ -15,11 +15,13 @@
       }
     }
   },
+
   "group1": {
     "foo": "bar",
     "baz": "bars",
     "nest": "str"
   },
+
   "group3": {
     "deep": {
       "id": {
@@ -27,5 +29,17 @@
       }
     },
     "fee": 100500
+  },
+
+  "group4": {
+    "default": "",
+    "foo": null,
+    "isNested": "none",
+    "key": false,
+    "nest": {
+      "bar": 0
+    },
+    "someKey": true,
+    "type": "bar"
   }
 }

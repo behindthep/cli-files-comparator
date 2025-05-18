@@ -2,56 +2,78 @@
 
 namespace Gendiff\Formatters;
 
-use function Functional\flatten;
+use Gendiff\Differ;
 
 class Plain
 {
-    public static function plainFormat(array $difference): string
+    private const COMPARE_TEXT_MAP = [
+        Differ::ADDED => 'added',
+        Differ::DELETED => 'removed',
+        Differ::CHANGED => 'updated',
+        Differ::UNCHANGED => '',
+        Differ::NESTED => '[complex value]',
+    ];
+
+    public static function render(array $data): string
     {
-        $formattedDiff   = self::makeStringsFromDiff($difference);
-        $stringifiedDiff = implode("\n", $formattedDiff);
-        return "{$stringifiedDiff}\n";
+        $result = self::iter($data['children']);
+        return rtrim(implode($result), " \n");
     }
 
-    private static function makeStringsFromDiff(array $difference, string $path = ''): array
+    private static function iter(array $value, array $acc = []): array
     {
-        $arrayOfDifferences = flatten(array_map(function ($node) use ($path) {
-            [
-                'status' => $status,
-                'key'    => $key,
-                'value1' => $value1,
-                'value2' => $value2
-            ] = $node;
+        $func = function ($val) use ($acc) {
 
-            $fullPath = "{$path}{$key}";
-
-            switch ($status) {
-                case 'nested':
-                    return self::makeStringsFromDiff($value1, "{$path}{$key}.");
-                case 'added':
-                    $stringifiedValue1 = self::stringifyValue($value1);
-                    return "Property '$fullPath' was added with value: $stringifiedValue1";
-                case 'removed':
-                    return "Property '$fullPath' was removed";
-                case 'updated':
-                    $stringifiedValue1 = self::stringifyValue($value1);
-                    $stringifiedValue2 = self::stringifyValue($value2);
-                    return "Property '$fullPath' was updated. From $stringifiedValue1 to $stringifiedValue2";
-                case 'unchanged':
-                    return;
+            if (!is_array($val)) {
+                return self::toString($val);
             }
-        }, $difference));
-        return array_filter($arrayOfDifferences, fn($value) => !is_null($value));
+
+            if (!array_key_exists(0, $val) && !array_key_exists('type', $val)) {
+                return self::toString($val);
+            }
+
+            $key = $val['key'];
+            $compare = $val['type'];
+            $compareText = self::COMPARE_TEXT_MAP[$compare];
+            $accNew = [...$acc, ...[$key]];
+
+            return match ($compare) {
+                Differ::ADDED => sprintf(
+                    "Property '%s' was %s with value: %s\n",
+                    implode('.', $accNew),
+                    $compareText,
+                    self::toString($val['value']),
+                ),
+                Differ::DELETED => sprintf(
+                    "Property '%s' was %s\n",
+                    implode('.', $accNew),
+                    $compareText,
+                ),
+                Differ::CHANGED => sprintf(
+                    "Property '%s' was %s. From %s to %s\n",
+                    implode('.', $accNew),
+                    $compareText,
+                    self::toString($val['value1']),
+                    self::toString($val['value2']),
+                ),
+                Differ::NESTED => implode(self::iter($val['children'], $accNew)),
+                default => null,
+            };
+        };
+
+        $result = array_map($func, $value);
+        return $result;
     }
 
-    private static function stringifyValue(mixed $value): mixed
+    private static function toString(mixed $value): string
     {
         return match (true) {
-            is_null($value)    => 'null',
-            is_bool($value)    => $value ? 'true' : 'false',
-            is_array($value)   => '[complex value]',
-            is_numeric($value) => $value,
-            default            => "'$value'",
+            $value === true => 'true',
+            $value === false => 'false',
+            is_null($value) => 'null',
+            is_array($value) || is_object($value) => '[complex value]',
+            is_string($value) => "'{$value}'",
+            default => trim((string) $value, "'")
         };
     }
 }

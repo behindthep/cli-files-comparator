@@ -1,9 +1,9 @@
 #!/usr/bin/env php
-
 <?php
 
 $autoloadPath1 = __DIR__ . '/../../../autoload.php';
 $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
+
 if (file_exists($autoloadPath1)) {
     require_once $autoloadPath1;
 } else {
@@ -26,16 +26,11 @@ Options:
   --format <fmt>                Report format [default: stylish]
 DOC;
 
-$params = [
-    'version' => '1.0.0'
-];
+$args = Docopt::handle($doc, ['version' => '1.0']);
 
-$args = Docopt::handle($doc, $params);
+$firsFilePath = $args['<firstFile>'];
+$secondFilePath = $args['<secondFile>'];
+$format = $args['--format'];
 
-$diff = Differ::genDiff(
-    $args['<firstFile>'], 
-    $args['<secondFile>'],
-    $args['--format']
-);
-
+$diff = Differ::genDiff($firsFilePath, $secondFilePath, $format);
 print_r($diff);
