@@ -15,7 +15,15 @@
   "autoload": {
     "psr-4": {
       "Gendiff\\": "src/"
-    }
+    },
+    "files": [
+      "src/Differ.php",
+      "src/Formatter.php",
+      "src/Parser.php",
+      "src/Formatters/Json.php",
+      "src/Formatters/Plain.php",
+      "src/Formatters/Stylish.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {

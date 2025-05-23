@@ -16,7 +16,7 @@
 ### Setup
 
 ```bash
-make install
+make setup
 ```
 
 ### Help

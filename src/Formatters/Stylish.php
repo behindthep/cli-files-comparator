@@ -1,111 +1,114 @@
 <?php
 
-namespace Gendiff\Formatters;
+namespace Gendiff\Formatters\Stylish;
 
-use Gendiff\Differ;
+use const Gendiff\Differ\{
+    ADDED,
+    DELETED,
+    CHANGED,
+    NESTED,
+    UNCHANGED,
+};
 
-class Stylish
+const SPACECOUNT = 4;
+const REPLACER = ' ';
+const COMPARE_TEXT_SYMBOL_MAP = [
+    ADDED => '+',
+    DELETED => '-',
+    CHANGED => ' ',
+    NESTED => ' ',
+    UNCHANGED => ' ',
+];
+
+function render(array $data): string
 {
-    private const SPACECOUNT = 4;
-    private const REPLACER = ' ';
-    private const COMPARE_TEXT_SYMBOL_MAP = [
-        Differ::ADDED => '+',
-        Differ::DELETED => '-',
-        Differ::CHANGED => ' ',
-        Differ::NESTED => ' ',
-        Differ::UNCHANGED => ' ',
-    ];
+    $result = iter($data['children']);
+    return $result;
+}
 
-    public static function render(array $data): string
-    {
-        $result = self::iter($data['children']);
-        return $result;
-    }
-
-    private static function iter(array $value, int $depth = 1): string
-    {
-        $func = function ($val) use ($depth) {
-            if (!is_array($val)) {
-                return self::toString($val);
-            }
-
-            if (!array_key_exists(0, $val) && !array_key_exists('type', $val)) {
-                return self::toString($val);
-            }
-
-            $compare = $val['type'];
-            $delete = self::COMPARE_TEXT_SYMBOL_MAP[Differ::DELETED];
-            $add = self::COMPARE_TEXT_SYMBOL_MAP[Differ::ADDED];
-            $compareSymbol = self::COMPARE_TEXT_SYMBOL_MAP[$compare];
-            $key = $val['key'];
-
-            return match ($compare) {
-                Differ::CHANGED => self::structure($val['value1'], $key, $delete, $depth)
-                . self::structure($val['value2'], $key, $add, $depth),
-                Differ::NESTED => self::structure(
-                    self::iter($val['children'], $depth + 1),
-                    $key, $compareSymbol, $depth
-                ),
-                default => self::structure($val['value'], $key, $compareSymbol, $depth),
-            };
-        };
-
-        $result = array_map($func, $value);
-        $closeBracketIndentSize = $depth * self::SPACECOUNT;
-        $closeBracketIndent = $closeBracketIndentSize > 0
-        ? str_repeat(self::REPLACER, $closeBracketIndentSize - self::SPACECOUNT) : '';
-
-        return "{\n" . implode($result) . "{$closeBracketIndent}}";
-    }
-
-    private static function structure(mixed $value, string $key, string $compareSymbol, int $depth): string
-    {
-        $indentSize = ($depth * self::SPACECOUNT) - 2;
-        $currentIndent = str_repeat(self::REPLACER, $indentSize);
-        $depthNested = $depth + 1;
-        $valueStructured = self::depthStructuring($value, $depthNested);
-
-        $result = sprintf(
-            "%s%s %s: %s\n",
-            $currentIndent,
-            $compareSymbol,
-            $key,
-            $valueStructured,
-        );
-        return $result;
-    }
-
-    private static function depthStructuring(mixed $value, int $depth): string
-    {
-        if (!is_array($value)) {
-            return self::toString($value);
+function iter(array $value, int $depth = 1): string
+{
+    $func = function ($val) use ($depth) {
+        if (!is_array($val)) {
+            return toString($val);
         }
 
-        $indentSize = $depth * self::SPACECOUNT;
-        $currentIndent = str_repeat(self::REPLACER, $indentSize);
+        if (!array_key_exists(0, $val) && !array_key_exists('type', $val)) {
+            return toString($val);
+        }
 
-        $fun = function ($key, $val) use ($depth, $currentIndent) {
-            return sprintf(
-                "%s%s: %s\n",
-                $currentIndent,
-                $key,
-                self::depthStructuring($val, $depth + 1),
-            );
+        $compare = $val['type'];
+        $delete = COMPARE_TEXT_SYMBOL_MAP[DELETED];
+        $add = COMPARE_TEXT_SYMBOL_MAP[ADDED];
+        $compareSymbol = COMPARE_TEXT_SYMBOL_MAP[$compare];
+        $key = $val['key'];
+
+        return match ($compare) {
+            CHANGED => structure($val['value1'], $key, $delete, $depth)
+            . structure($val['value2'], $key, $add, $depth),
+            NESTED => structure(
+                iter($val['children'], $depth + 1),
+                $key, $compareSymbol, $depth
+            ),
+            default => structure($val['value'], $key, $compareSymbol, $depth),
         };
+    };
 
-        $result = array_map($fun, array_keys($value), $value);
-        $closeBracketIndent = str_repeat(self::REPLACER, $indentSize - self::SPACECOUNT);
+    $result = array_map($func, $value);
+    $closeBracketIndentSize = $depth * SPACECOUNT;
+    $closeBracketIndent = $closeBracketIndentSize > 0
+    ? str_repeat(REPLACER, $closeBracketIndentSize - SPACECOUNT) : '';
 
-        return "{\n" . implode($result) . "{$closeBracketIndent}}";
+    return "{\n" . implode($result) . "{$closeBracketIndent}}";
+}
+
+function structure(mixed $value, string $key, string $compareSymbol, int $depth): string
+{
+    $indentSize = ($depth * SPACECOUNT) - 2;
+    $currentIndent = str_repeat(REPLACER, $indentSize);
+    $depthNested = $depth + 1;
+    $valueStructured = depthStructuring($value, $depthNested);
+
+    $result = sprintf(
+        "%s%s %s: %s\n",
+        $currentIndent,
+        $compareSymbol,
+        $key,
+        $valueStructured,
+    );
+    return $result;
+}
+
+function depthStructuring(mixed $value, int $depth): string
+{
+    if (!is_array($value)) {
+        return toString($value);
     }
 
-    private static function toString(mixed $value): string
-    {
-        return match (true) {
-            $value === true => 'true',
-            $value === false => 'false',
-            is_null($value) => 'null',
-            default => trim((string) $value, "'")
-        };
-    }
+    $indentSize = $depth * SPACECOUNT;
+    $currentIndent = str_repeat(REPLACER, $indentSize);
+
+    $fun = function ($key, $val) use ($depth, $currentIndent) {
+        return sprintf(
+            "%s%s: %s\n",
+            $currentIndent,
+            $key,
+            depthStructuring($val, $depth + 1),
+        );
+    };
+
+    $result = array_map($fun, array_keys($value), $value);
+    $closeBracketIndent = str_repeat(REPLACER, $indentSize - SPACECOUNT);
+
+    return "{\n" . implode($result) . "{$closeBracketIndent}}";
+}
+
+function toString(mixed $value): string
+{
+    return match (true) {
+        $value === true => 'true',
+        $value === false => 'false',
+        is_null($value) => 'null',
+        default => trim((string) $value, "'")
+    };
 }

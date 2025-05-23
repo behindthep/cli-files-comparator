@@ -21,7 +21,7 @@ jobs:
           php-version: ${{ matrix.php-versions }}
 
       - name: Install
-        run: make install
+        run: make setup
 
       - name: Validate
         run: make validate

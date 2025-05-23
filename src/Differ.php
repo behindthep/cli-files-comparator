@@ -1,102 +1,99 @@
 <?php
 
-namespace Gendiff;
+namespace Gendiff\Differ;
 
-use Gendiff\{Parser, Formatter};
-
+use function Gendiff\Parser\parser;
+use function Gendiff\Formatter\format;
 use function Functional\sort as fsort;
 
-class Differ
+const UNCHANGED = 'unchanged';
+const CHANGED = 'changed';
+const ADDED = 'added';
+const DELETED = 'deleted';
+const NESTED = 'nested';
+
+function genDiff(string $file1, string $file2, string $format = 'stylish'): string
 {
-    public const UNCHANGED = 'unchanged';
-    public const CHANGED = 'changed';
-    public const ADDED = 'added';
-    public const DELETED = 'deleted';
-    public const NESTED = 'nested';
+    ['extension' => $extension1, 'content' => $contentFile1] = getContents($file1);
+    ['extension' => $extension2, 'content' => $contentFile2] = getContents($file2);
 
-    public static function genDiff(string $file1, string $file2, string $format = 'stylish'): string
-    {
-        ['extension' => $extension1, 'content' => $contentFile1] = self::getContents($file1);
-        ['extension' => $extension2, 'content' => $contentFile2]  = self::getContents($file2);
+    $valueFile1 = parser($extension1, $contentFile1);
+    $valueFile2 = parser($extension2, $contentFile2);
 
-        $valueFile1 = Parser::parser($extension1, $contentFile1);
-        $valueFile2 = Parser::parser($extension2, $contentFile2);
+    $valueDiff = buildDiff($valueFile1, $valueFile2);
+    $valueDiffWithRoot = addingRootNode($valueDiff);
 
-        $valueDiff = self::buildDiff($valueFile1, $valueFile2);
-        $valueDiffWithRoot = self::addingRootNode($valueDiff);
+    return format($valueDiffWithRoot, $format);
+}
 
-        return Formatter::format($valueDiffWithRoot, $format);
+function getContents(string $path): array
+{
+    if (!file_exists($path)) {
+        throw new \Exception("Invalid file path: {$path}");
     }
 
-    private static function getContents(string $path): array
-    {
-        if (!file_exists($path)) {
-            throw new \Exception("Invalid file path: {$path}");
+    return [
+        'extension' => pathinfo($path, PATHINFO_EXTENSION),
+        'content' => file_get_contents($path),
+    ];
+}
+
+function buildDiff(array $first, array $second): array
+{
+    $uniqueKeys = array_unique(array_merge(array_keys($first), array_keys($second)));
+    $sortedArray = fsort($uniqueKeys, function ($first, $second) {
+        return $first <=> $second;
+    });
+
+    return array_map(function ($key) use ($first, $second) {
+        $valueFirst = $first[$key] ?? null;
+        $valueSecond = $second[$key] ?? null;
+
+        if (
+            (is_array($valueFirst) && !array_is_list($valueFirst)) &&
+            (is_array($valueSecond) && !array_is_list($valueSecond))
+        ) {
+            return [
+                'key' => $key,
+                'type' => NESTED,
+                'children' => buildDiff($valueFirst, $valueSecond),
+            ];
+        }
+
+        if (!array_key_exists($key, $first)) {
+            return [
+                'key' => $key,
+                'type' => ADDED,
+                'value' => $valueSecond,
+            ];
+        }
+
+        if (!array_key_exists($key, $second)) {
+            return [
+                'key' => $key,
+                'type' => DELETED,
+                'value' => $valueFirst,
+            ];
+        }
+
+        if ($valueFirst === $valueSecond) {
+            return [
+                'key' => $key,
+                'type' => UNCHANGED,
+                'value' => $valueFirst,
+            ];
         }
 
         return [
-            'extension' => pathinfo($path, PATHINFO_EXTENSION),
-            'content' => file_get_contents($path),
+            'key' => $key,
+            'type' => CHANGED,
+            'value1' => $valueFirst,
+            'value2' => $valueSecond,
         ];
-    }
+    }, $sortedArray);
+}
 
-    private static function buildDiff(array $first, array $second): array
-    {
-        $uniqueKeys = array_unique(array_merge(array_keys($first), array_keys($second)));
-        $sortedArray = fsort($uniqueKeys, function ($first, $second) {
-            return $first <=> $second;
-        });
-
-        return array_map(function ($key) use ($first, $second) {
-            $valueFirst = $first[$key] ?? null;
-            $valueSecond = $second[$key] ?? null;
-
-            if (
-                (is_array($valueFirst) && !array_is_list($valueFirst)) &&
-                (is_array($valueSecond) && !array_is_list($valueSecond))
-            ) {
-                return [
-                    'key' => $key,
-                    'type' => self::NESTED,
-                    'children' => self::buildDiff($valueFirst, $valueSecond),
-                ];
-            }
-
-            if (!array_key_exists($key, $first)) {
-                return [
-                    'key' => $key,
-                    'type' => self::ADDED,
-                    'value' => $valueSecond,
-                ];
-            }
-
-            if (!array_key_exists($key, $second)) {
-                return [
-                    'key' => $key,
-                    'type' => self::DELETED,
-                    'value' => $valueFirst,
-                ];
-            }
-
-            if ($valueFirst === $valueSecond) {
-                return [
-                    'key' => $key,
-                    'type' => self::UNCHANGED,
-                    'value' => $valueFirst,
-                ];
-            }
-
-            return [
-                'key' => $key,
-                'type' => self::CHANGED,
-                'value1' => $valueFirst,
-                'value2' => $valueSecond,
-            ];
-        }, $sortedArray);
-    }
-
-    private static function addingRootNode(array $value): array
-    {
-        return ['type' => 'root', 'children' => $value];
-    }
+function addingRootNode(array $value): array
+{
+    return ['type' => 'root', 'children' => $value];
 }

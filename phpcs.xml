@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Difference Comparator">
+<ruleset name="Files Comparator">
     <description>Coding Standards</description>
     <arg name="basepath" value="."/>
     <arg name="colors"/>

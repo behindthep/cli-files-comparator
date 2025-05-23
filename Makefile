@@ -1,4 +1,4 @@
-install:
+setup:
 	composer install
 
 validate:

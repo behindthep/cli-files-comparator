@@ -1,22 +1,17 @@
 <?php
 
-namespace Gendiff;
+namespace Gendiff\Formatter;
 
-use Gendiff\Formatters\{
-    Stylish,
-    Plain,
-    Json,
-};
+use function Gendiff\Formatters\Stylish\render as stylish;
+use function Gendiff\Formatters\Json\render as json;
+use function Gendiff\Formatters\Plain\render as plain;
 
-class Formatter
+function format(array $diff, string $format): string
 {
-    public static function format(array $diff, string $format): string
-    {
-        return match ($format) {
-            'stylish' => Stylish::render($diff),
-            'json' => Json::render($diff),
-            'plain' => Plain::render($diff),
-            default => throw new \Exception(sprintf('Unknown data format: "%s"!', $format)),
-        };
-    }
+    return match ($format) {
+        'stylish' => stylish($diff),
+        'json' => json($diff),
+        'plain' => plain($diff),
+        default => throw new \Exception(sprintf('Unknown data format: "%s"!', $format)),
+    };
 }
