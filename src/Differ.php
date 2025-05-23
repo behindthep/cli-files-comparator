@@ -2,9 +2,11 @@
 
 namespace Gendiff\Differ;
 
-use function Gendiff\Parser\parser;
-use function Gendiff\Formatter\format;
 use function Functional\sort as fsort;
+use function Gendiff\{
+    Parser\parser,
+    Formatter\format
+};
 
 const UNCHANGED = 'unchanged';
 const CHANGED = 'changed';

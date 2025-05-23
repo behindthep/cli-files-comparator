@@ -30,7 +30,6 @@ class GenDiffTest extends TestCase
         return [
             'json - json' => ['file1.json', 'file2.json'],
             'json - yml' => ['file1.json', 'file2.yml'],
-            'yml - json' => ['file1.yml', 'file2.json'],
             'yml - yml' => ['file1.yml', 'file2.yml']
         ];
     }

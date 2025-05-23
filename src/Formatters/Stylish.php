@@ -45,10 +45,12 @@ function iter(array $value, int $depth = 1): string
 
         return match ($compare) {
             CHANGED => structure($val['value1'], $key, $delete, $depth)
-            . structure($val['value2'], $key, $add, $depth),
+                . structure($val['value2'], $key, $add, $depth),
             NESTED => structure(
                 iter($val['children'], $depth + 1),
-                $key, $compareSymbol, $depth
+                $key,
+                $compareSymbol,
+                $depth
             ),
             default => structure($val['value'], $key, $compareSymbol, $depth),
         };
@@ -57,7 +59,8 @@ function iter(array $value, int $depth = 1): string
     $result = array_map($func, $value);
     $closeBracketIndentSize = $depth * SPACECOUNT;
     $closeBracketIndent = $closeBracketIndentSize > 0
-    ? str_repeat(REPLACER, $closeBracketIndentSize - SPACECOUNT) : '';
+        ? str_repeat(REPLACER, $closeBracketIndentSize - SPACECOUNT)
+        : '';
 
     return "{\n" . implode($result) . "{$closeBracketIndent}}";
 }

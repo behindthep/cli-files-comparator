@@ -2,9 +2,11 @@
 
 namespace Gendiff\Formatter;
 
-use function Gendiff\Formatters\Stylish\render as stylish;
-use function Gendiff\Formatters\Json\render as json;
-use function Gendiff\Formatters\Plain\render as plain;
+use function Gendiff\Formatters\{
+    Stylish\render as stylish,
+    Json\render as json,
+    Plain\render as plain
+};
 
 function format(array $diff, string $format): string
 {
