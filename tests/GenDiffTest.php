@@ -25,6 +25,7 @@ class GenDiffTest extends TestCase
         return rtrim($data);
     }
 
+    // Метод data provider-ом - возвращать массив массивов или объект, реализующий интерфейс Iterator
     public static function dataProvider(): array
     {
         return [
@@ -34,6 +35,7 @@ class GenDiffTest extends TestCase
         ];
     }
 
+    // Аннотацию, что в качестве data provider-а вызвать метод dataProvider
     #[DataProvider('dataProvider')]
     public function testDefault(string $firstFile, string $secondFile): void
     {
